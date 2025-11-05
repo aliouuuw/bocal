@@ -1,11 +1,16 @@
 import { motion } from "motion/react";
 import { Terminal, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
+import { AnimatedGridBeams } from "./AnimatedGridBeams";
+import { useRef } from "react";
 
 export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-6 py-32">
-      <div className="max-w-6xl mx-auto w-full">
+    <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center px-6 py-32 overflow-hidden">
+      <AnimatedGridBeams containerRef={sectionRef} />
+      <div className="relative z-10 max-w-6xl mx-auto w-full">
         <div className="space-y-16">
           {/* Badge */}
           <motion.div

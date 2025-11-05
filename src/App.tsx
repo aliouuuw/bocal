@@ -248,7 +248,7 @@ function AppContent() {
 
 export default function App() {
   return (
-    <ThemeProvider children={<React.Fragment />}>
+    <ThemeProvider>
       <AppContent />
     </ThemeProvider>
   );
