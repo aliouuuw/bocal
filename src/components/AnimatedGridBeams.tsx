@@ -12,7 +12,7 @@ interface GridBeam {
 }
 
 interface AnimatedGridBeamsProps {
-  containerRef?: React.RefObject<HTMLElement>;
+  containerRef?: React.RefObject<HTMLElement | null>;
 }
 
 export function AnimatedGridBeams({ containerRef }: AnimatedGridBeamsProps) {

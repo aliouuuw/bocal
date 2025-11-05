@@ -9,6 +9,11 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
   
   return (
     <section ref={sectionRef} className="relative min-h-screen flex items-center justify-center px-6 py-32 overflow-hidden">
+      {/* Gradient + noise background */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none z-0">
+        <div className="hero-gradient"></div>
+        <div className="hero-noise"></div>
+      </div>
       <AnimatedGridBeams containerRef={sectionRef} />
       <div className="relative z-10 max-w-6xl mx-auto w-full">
         <div className="space-y-16">
