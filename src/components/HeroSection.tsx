@@ -1,7 +1,9 @@
+import React from "react";
 import { motion } from "motion/react";
 import { Terminal, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { AnimatedGridBeams } from "./AnimatedGridBeams";
+import { TypewriterText } from "./TypewriterText";
 import { useRef } from "react";
 
 export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) {
@@ -14,7 +16,7 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
         <div className="hero-gradient"></div>
         <div className="hero-noise"></div>
       </div>
-      <AnimatedGridBeams containerRef={sectionRef} />
+      <AnimatedGridBeams containerRef={sectionRef as React.RefObject<HTMLElement>} />
       <div className="relative z-10 max-w-6xl mx-auto w-full">
         <div className="space-y-16">
           {/* Badge */}
@@ -26,7 +28,7 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
           >
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 backdrop-blur-sm">
               <Terminal className="w-3.5 h-3.5 text-emerald-400 dark:text-emerald-400 light:text-emerald-600" />
-              <span className="text-emerald-300/90 dark:text-emerald-300/90 light:text-emerald-700 font-mono text-sm tracking-wide">Programme Nouvelle Génération</span>
+              <span className="text-emerald-300/90 dark:text-emerald-300/90 light:text-emerald-700 font-mono text-sm tracking-wide">bocal.dev/bootcamp</span>
             </div>
           </motion.div>
           
@@ -44,10 +46,14 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
                 transition={{ delay: 0.3 }}
                 className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[1.1] tracking-tight"
               >
-                <span className="block text-gray-100 dark:text-gray-100 light:text-gray-900">Construire Plus Vite.</span>
-                <span className="block text-gray-100 dark:text-gray-100 light:text-gray-900">Livrer Plus Smart.</span>
-                <span className="block bg-gradient-to-r from-emerald-400 to-emerald-300 dark:from-emerald-400 dark:to-emerald-300 light:from-emerald-600 light:to-emerald-500 bg-clip-text text-transparent">
-                  Être Embauché.
+                <span className="block text-gray-100 dark:text-gray-100 light:text-gray-900">Apprends. Construis.</span>
+                <span className="block bg-gradient-to-r from-emerald-400 to-emerald-300 dark:from-emerald-400 dark:to-emerald-300 light:from-emerald-600 light:to-emerald-500 bg-clip-text text-transparent font-mono">
+                  <TypewriterText 
+                    text="Deviens Pro!"
+                    speed={80}
+                    delay={800}
+                    showCursor={true}
+                  />
                 </span>
               </motion.div>
             </h1>
@@ -58,9 +64,10 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
               transition={{ delay: 0.5 }}
               className="max-w-2xl mx-auto text-gray-400 dark:text-gray-400 light:text-gray-600 text-lg leading-relaxed"
             >
-              Formation pratique boostée par l'IA pour transformer les développeurs africains 
-              en builders complets. Maîtrisez les outils, workflows et stratégies qui vous rendent{" "}
+              Maîtrisez les outils modernes et l'IA qui accélèrent votre développement. 
+              Partagez, apprenez ensemble, et devenez{" "}
               <span className="text-emerald-400 dark:text-emerald-400 light:text-emerald-600">employable</span>.
+              {" "}Les meilleurs décrochent leurs premières missions.
             </motion.p>
           </motion.div>
           
@@ -75,7 +82,7 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
               onClick={onScrollToForm}
               className="group h-12 px-8 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-500 dark:hover:bg-emerald-600 light:bg-emerald-600 light:hover:bg-emerald-700 text-black dark:text-black light:text-white border-0"
             >
-              Explorer la Documentation
+              Commencer le Parcours
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </motion.div>
@@ -88,9 +95,9 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
             className="grid grid-cols-1 md:grid-cols-3 gap-px bg-gray-800/50 dark:bg-gray-800/50 light:bg-gray-200/50 rounded-2xl overflow-hidden max-w-4xl mx-auto"
           >
             {[
-              { label: "Sessions Live", value: "Chaque Semaine", desc: "Deep-dives IA & Dev" },
-              { label: "Projets Réels", value: "Portfolio Pro", desc: "Prêts à montrer" },
-              { label: "Top Performers", value: "Missions Réelles", desc: "Freelancing garanti" }
+              { label: "Apprentissage Continu", value: "Accompagnement", desc: "Devoirs, exams, projets" },
+              { label: "Communauté Active", value: "Entraide", desc: "Partagez & progressez" },
+              { label: "Meilleurs Étudiants", value: "Missions Payées", desc: "Freelancing réel" }
             ].map((stat, index) => (
               <div 
                 key={index}
