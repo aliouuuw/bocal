@@ -176,6 +176,10 @@
     font-weight: inherit;
   }
 
+  button {
+    cursor: pointer;
+  }
+
   a {
     color: inherit;
     -webkit-text-decoration: inherit;

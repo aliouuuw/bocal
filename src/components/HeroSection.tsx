@@ -1,7 +1,9 @@
+import React from "react";
 import { motion } from "motion/react";
 import { Terminal, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { AnimatedGridBeams } from "./AnimatedGridBeams";
+import { TypewriterText } from "./TypewriterText";
 import { useRef } from "react";
 
 export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) {
@@ -14,7 +16,7 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
         <div className="hero-gradient"></div>
         <div className="hero-noise"></div>
       </div>
-      <AnimatedGridBeams containerRef={sectionRef} />
+      <AnimatedGridBeams containerRef={sectionRef as React.RefObject<HTMLElement>} />
       <div className="relative z-10 max-w-6xl mx-auto w-full">
         <div className="space-y-16">
           {/* Badge */}
@@ -44,10 +46,14 @@ export function HeroSection({ onScrollToForm }: { onScrollToForm: () => void }) 
                 transition={{ delay: 0.3 }}
                 className="text-[clamp(2.5rem,8vw,5.5rem)] leading-[1.1] tracking-tight"
               >
-                <span className="block text-gray-100 dark:text-gray-100 light:text-gray-900">Apprendre. Construire.</span>
-                <span className="block text-gray-100 dark:text-gray-100 light:text-gray-900">Se Transformer.</span>
-                <span className="block bg-gradient-to-r from-emerald-400 to-emerald-300 dark:from-emerald-400 dark:to-emerald-300 light:from-emerald-600 light:to-emerald-500 bg-clip-text text-transparent">
-                  Devenir Incontournable.
+                <span className="block text-gray-100 dark:text-gray-100 light:text-gray-900">Apprends. Construis.</span>
+                <span className="block bg-gradient-to-r from-emerald-400 to-emerald-300 dark:from-emerald-400 dark:to-emerald-300 light:from-emerald-600 light:to-emerald-500 bg-clip-text text-transparent font-mono">
+                  <TypewriterText 
+                    text="Deviens Pro!"
+                    speed={80}
+                    delay={800}
+                    showCursor={true}
+                  />
                 </span>
               </motion.div>
             </h1>

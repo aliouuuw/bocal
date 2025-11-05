@@ -1,17 +1,18 @@
 import React from "react";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { ThemeProvider } from "./components/ThemeProvider";
+import { ThemeProvider, useTheme } from "./components/ThemeProvider";
 import { AnimatedBackground } from "./components/AnimatedBackground";
 import { HeroSection } from "./components/HeroSection";
 import { DocsNavigation } from "./components/DocsNavigation";
 import { DocsContent } from "./components/DocsContent";
 import { RegistrationForm } from "./components/RegistrationForm";
 import { ThemeSwitcher } from "./components/ThemeSwitcher";
-import { Code2, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "./components/ui/button";
 
 function AppContent() {
+  const { theme } = useTheme();
   const formRef = useRef<HTMLDivElement>(null);
   const docsRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -63,7 +64,7 @@ function AppContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black dark:bg-black light:bg-white text-white dark:text-white light:text-gray-900 transition-colors duration-300">
+    <div className="min-h-screen bg-black dark:bg-black light:bg-white text-white dark:text-white light:text-gray-900 transition-colors duration-300 antialiased">
       <AnimatedBackground />
       
       {/* Header */}
@@ -78,9 +79,14 @@ function AppContent() {
             {/* Logo */}
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-                <Code2 className="w-5 h-5 text-emerald-400 dark:text-emerald-400 light:text-emerald-600" />
+                <img 
+                  src="/bocal-favicon.png" 
+                  alt="Bocal Logo" 
+                  className="w-5 h-5"
+                  style={{ filter: theme === 'dark' ? 'invert(1)' : 'none' }}
+                />
               </div>
-              <span className="text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono tracking-tight">Bootcamp</span>
+              <span className="text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono tracking-tight">Bocal Bootcamp</span>
             </div>
             
             {/* Desktop Nav */}
@@ -204,8 +210,18 @@ function AppContent() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3 text-gray-500 dark:text-gray-500 light:text-gray-600">
-              <Code2 className="w-4 h-4 text-emerald-400 dark:text-emerald-400 light:text-emerald-600" />
+              <img 
+                src="/bocal-favicon.png" 
+                alt="Bocal Logo" 
+                className="w-4 h-4"
+                style={{ filter: theme === 'dark' ? 'invert(1)' : 'none' }}
+              />
               <span className="text-sm">© 2025 Bootcamp. Conçu pour les développeurs africains.</span>
+            </div>
+            <div className="flex items-center gap-2"> 
+              <a href="https://aliou.online" target="_blank" rel="noopener noreferrer" className="text-xs text-emerald-400 dark:text-emerald-400 light:text-emerald-600">
+              @aliouuuu
+              </a>
             </div>
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-600 light:text-gray-500 font-mono text-sm">
               <span>{"// Apprendre"}</span>

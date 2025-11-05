@@ -41,7 +41,7 @@ const benefitsData = [
     title: "Communauté Privée",
     description: "Rejoignez une communauté de développeurs ambitieux, accédez aux mentors et recevez des mises à jour hebdomadaires de ressources et opportunités.",
     details: [
-      "Canal Slack/Discord privé",
+      "Canal de communication privé",
       "Sessions Q&A avec mentors",
       "Partage de ressources exclusives",
       "Networking avec pairs"
