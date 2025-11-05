@@ -4,9 +4,20 @@
   "devCommand": "bun run dev",
   "installCommand": "bun install",
   "framework": "vite",
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/bootcamp",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/bootcamp",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/bootcamp/(.*)",
       "destination": "/index.html"
     }
   ],
