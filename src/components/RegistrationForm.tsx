@@ -20,10 +20,16 @@ export function RegistrationForm() {
     e.preventDefault();
     
     try {
-      // Replace with your actual SheetDB URL
-      const SHEETDB_URL = process.env.SHEETDB_URL;
+      // Get SheetDB URL from environment variable
+      const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL as string;
       
-      const response = await fetch(SHEETDB_URL as string, {
+      if (!SHEETDB_URL) {
+        console.error("SHEETDB_URL not configured");
+        alert("Configuration error. Please contact support.");
+        return;
+      }
+      
+      const response = await fetch(SHEETDB_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
