@@ -4,13 +4,16 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
-import { CheckCircle2, Send } from "lucide-react";
+import { CheckCircle2, Send, Loader2, AlertCircle } from "lucide-react";
 
 export function RegistrationForm() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     location: "",
     experience: "",
     motivation: ""
@@ -18,15 +21,15 @@ export function RegistrationForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
     
     try {
       // Get SheetDB URL from environment variable
       const SHEETDB_URL = import.meta.env.VITE_SHEETDB_URL as string;
       
       if (!SHEETDB_URL) {
-        console.error("SHEETDB_URL not configured");
-        alert("Configuration error. Please contact support.");
-        return;
+        throw new Error("Configuration error. Please contact support.");
       }
       
       const response = await fetch(SHEETDB_URL, {
@@ -37,6 +40,8 @@ export function RegistrationForm() {
         body: JSON.stringify({
           data: {
             ...formData,
+            // Prefix phone with single quote to prevent Google Sheets formula error
+            phone: `'${formData.phone}`,
             timestamp: new Date().toISOString()
           }
         })
@@ -46,31 +51,56 @@ export function RegistrationForm() {
         console.log("Form submitted successfully to SheetDB");
         setSubmitted(true);
         
+        // Reset form after showing success message
         setTimeout(() => {
           setSubmitted(false);
           setFormData({
             name: "",
             email: "",
+            phone: "",
             location: "",
             experience: "",
             motivation: ""
           });
-        }, 3000);
+        }, 5000);
       } else {
-        console.error("SheetDB submission failed:", await response.text());
-        alert("Une erreur est survenue. Veuillez réessayer.");
+        const errorText = await response.text();
+        console.error("SheetDB submission failed:", errorText);
+        throw new Error("Erreur lors de l'envoi. Vérifiez votre connexion et réessayez.");
       }
     } catch (error) {
       console.error("Error submitting form to SheetDB:", error);
-      alert("Une erreur est survenue. Veuillez réessayer.");
+      setError(error instanceof Error ? error.message : "Une erreur est survenue. Veuillez réessayer.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    const { name, value } = e.target;
+    
+    // Format phone number as user types
+    if (name === "phone") {
+      // Remove non-digit characters
+      const digits = value.replace(/\D/g, "");
+      // Format as user types (e.g., +221 77 123 45 67)
+      let formatted = digits;
+      if (digits.length > 0) {
+        if (digits.startsWith("221")) {
+          // Senegal format
+          formatted = `+221 ${digits.slice(3, 5)} ${digits.slice(5, 8)} ${digits.slice(8, 10)} ${digits.slice(10, 12)}`.trim();
+        } else if (digits.length <= 9) {
+          // Short format
+          formatted = digits.replace(/(\d{2})(\d{3})(\d{2})(\d{2})/, "$1 $2 $3 $4").trim();
+        }
+      }
+      setFormData(prev => ({ ...prev, [name]: formatted }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+    
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   if (submitted) {
@@ -146,6 +176,18 @@ export function RegistrationForm() {
           <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent rounded-2xl blur-2xl"></div>
           <div className="relative p-8 sm:p-12 rounded-2xl border border-gray-800/80 dark:border-gray-800/80 light:border-gray-200/80 bg-gradient-to-b from-gray-900/50 to-black/50 dark:from-gray-900/50 dark:to-black/50 light:from-gray-50/80 light:to-white/80 backdrop-blur-xl">
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Error Message */}
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/30"
+                >
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-red-400 text-sm font-mono">{error}</p>
+                </motion.div>
+              )}
+
               {/* Name */}
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-gray-300 dark:text-gray-300 light:text-gray-900 light:font-semibold font-mono text-sm">
@@ -157,7 +199,8 @@ export function RegistrationForm() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all"
+                  disabled={isSubmitting}
+                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="Votre nom complet"
                 />
               </div>
@@ -174,9 +217,31 @@ export function RegistrationForm() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all"
+                  disabled={isSubmitting}
+                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="votre@email.com"
                 />
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="text-gray-300 dark:text-gray-300 light:text-gray-900 light:font-semibold font-mono text-sm">
+                  Numéro de Téléphone <span className="text-emerald-400 dark:text-emerald-400 light:text-emerald-600">*</span>
+                </Label>
+                <Input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={handleChange}
+                  disabled={isSubmitting}
+                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  placeholder="+221 77 123 45 67"
+                />
+                <p className="text-gray-500 dark:text-gray-500 light:text-gray-600 text-xs font-mono">
+                  Format: +221 XX XXX XX XX ou 77 123 45 67
+                </p>
               </div>
 
               {/* Location */}
@@ -190,7 +255,8 @@ export function RegistrationForm() {
                   required
                   value={formData.location}
                   onChange={handleChange}
-                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all"
+                  disabled={isSubmitting}
+                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="Dakar, Sénégal"
                 />
               </div>
@@ -206,7 +272,8 @@ export function RegistrationForm() {
                   required
                   value={formData.experience}
                   onChange={handleChange}
-                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all"
+                  disabled={isSubmitting}
+                  className="h-12 bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="ex: 1 an avec React & Node.js"
                 />
               </div>
@@ -222,20 +289,34 @@ export function RegistrationForm() {
                   required
                   value={formData.motivation}
                   onChange={handleChange}
+                  disabled={isSubmitting}
                   rows={5}
-                  className="bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl resize-none transition-all"
+                  className="bg-black/40 dark:bg-black/40 light:bg-white light:border-gray-300 light:shadow-sm light:focus:border-emerald-600 light:focus:ring-2 light:focus:ring-emerald-600/20 border-gray-800 dark:border-gray-800 dark:focus:border-emerald-500/50 text-gray-100 dark:text-gray-100 light:text-gray-900 font-mono placeholder:text-gray-600 dark:placeholder:text-gray-600 light:placeholder:text-gray-500 rounded-xl resize-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   placeholder="Parlez-nous de vos objectifs et ce que vous espérez accomplir..."
                 />
+                <p className="text-gray-500 dark:text-gray-500 light:text-gray-600 text-xs font-mono">
+                  {formData.motivation.length}/500 caractères
+                </p>
               </div>
 
               {/* Submit */}
               <Button
                 type="submit"
-                className="group w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-black border-0 rounded-xl"
+                disabled={isSubmitting}
+                className="group w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-black border-0 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-emerald-500 transition-all"
               >
                 <span className="flex items-center justify-center gap-2 font-mono">
-                  Envoyer la Candidature
-                  <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Envoi en cours...
+                    </>
+                  ) : (
+                    <>
+                      Envoyer la Candidature
+                      <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </>
+                  )}
                 </span>
               </Button>
 
