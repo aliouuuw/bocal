@@ -80,7 +80,7 @@ function AppContent() {
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
                 <img 
-                  src="/bocal-favicon.png" 
+                  src={import.meta.env.BASE_URL + 'bocal-favicon.png'} 
                   alt="Bocal Logo" 
                   className="w-5 h-5"
                   style={{ filter: theme === 'dark' ? 'invert(1)' : 'none' }}
@@ -211,7 +211,7 @@ function AppContent() {
           <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3 text-gray-500 dark:text-gray-500 light:text-gray-600">
               <img 
-                src="/bocal-favicon.png" 
+                src={import.meta.env.BASE_URL + 'bocal-favicon.png'} 
                 alt="Bocal Logo" 
                 className="w-4 h-4"
                 style={{ filter: theme === 'dark' ? 'invert(1)' : 'none' }}
