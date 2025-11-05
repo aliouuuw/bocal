@@ -13,17 +13,25 @@
   ],
   "rewrites": [
     {
+      "source": "/bootcamp/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/bootcamp/:file(.*\\.\\w+)",
+      "destination": "/:file"
+    },
+    {
       "source": "/bootcamp",
       "destination": "/index.html"
     },
     {
-      "source": "/bootcamp/((?!assets/|.*\\.).*)",
+      "source": "/bootcamp/:path*",
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/assets/(.*)",
+      "source": "/(bootcamp/)?assets/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
