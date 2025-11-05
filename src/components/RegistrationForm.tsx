@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "motion/react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -16,21 +16,48 @@ export function RegistrationForm() {
     motivation: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
     
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        location: "",
-        experience: "",
-        motivation: ""
+    try {
+      // Replace with your actual SheetDB URL
+      const SHEETDB_URL = process.env.SHEETDB_URL;
+      
+      const response = await fetch(SHEETDB_URL as string, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          data: {
+            ...formData,
+            timestamp: new Date().toISOString()
+          }
+        })
       });
-    }, 3000);
+
+      if (response.ok) {
+        console.log("Form submitted successfully to SheetDB");
+        setSubmitted(true);
+        
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({
+            name: "",
+            email: "",
+            location: "",
+            experience: "",
+            motivation: ""
+          });
+        }, 3000);
+      } else {
+        console.error("SheetDB submission failed:", await response.text());
+        alert("Une erreur est survenue. Veuillez réessayer.");
+      }
+    } catch (error) {
+      console.error("Error submitting form to SheetDB:", error);
+      alert("Une erreur est survenue. Veuillez réessayer.");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
